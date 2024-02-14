@@ -1,32 +1,36 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { routes } from './routes'
 
-export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-	//
-	// Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-	// MY_QUEUE: Queue;
+type EnvVars = {
+	[key in `USER__${string}`]: string
+}
+
+export interface Env extends EnvVars {
+	EVENTS_KV: KVNamespace
 }
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!');
+		try {
+			const response = await getRouteFunction(request)(request, env, ctx)
+			return response
+		} catch (error) {
+			if (error instanceof Response) {
+				return error
+			}
+			const message = error instanceof Error ? error.message : 'Internal Server Error'
+			return new Response(message, { status: 500 })
+		}
 	},
-};
+}
+
+function getRouteFunction(request: Request) {
+	const url = new URL(request.url)
+	if (url.pathname in routes) {
+		const routeMethods = routes[url.pathname]
+		if (request.method in routeMethods) {
+			return routeMethods[request.method]
+		}
+		throw new Response('Method not allowed', { status: 405 })
+	}
+	throw new Response('Not found', { status: 404 })
+}

@@ -1,3 +1,6 @@
+# This file has somewhat sensitive information
+wrangler.toml
+
 # Logs
 
 logs
