@@ -1,8 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
 import type { Env } from '..'
-import { authenticate, jsonResponse, queryKey, queryNumber } from '../lib/http'
-import { deleteDraft, getAllDrafts, putDraft } from '../lib/kv'
-import { parseEvent } from '../lib/event'
+import { authenticate, jsonResponse, queryNumber } from '../lib/http'
+import { getAllDrafts } from '../lib/kv'
 
 /*
 	The permissions for drafts are opposite to published event permissions:
@@ -25,38 +23,4 @@ export async function GET(request: Request, env: Env, ctx: ExecutionContext): Pr
 
 	const { length, events } = await getAllDrafts(env, { start, limit })
 	return jsonResponse({ length, events })
-}
-
-// create
-export async function POST(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-	const event = parseEvent(await request.json())
-	const key = uuidv4()
-	event.key = key
-
-	await putDraft(env, key, event)
-	return jsonResponse({ key })
-}
-
-// edit
-export async function PUT(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-	const key = queryKey(request)
-	if (!key) {
-		return new Response('Missing key', { status: 401 })
-	}
-
-	const event = parseEvent(await request.json())
-	event.key = key
-	await putDraft(env, key, event)
-	return new Response('OK')
-}
-
-// delete
-export async function DELETE(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-	const key = queryKey(request)
-	if (!key) {
-		return new Response('Missing key', { status: 401 })
-	}
-
-	await deleteDraft(env, key)
-	return new Response('OK')
 }
