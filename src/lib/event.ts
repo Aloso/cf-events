@@ -33,6 +33,7 @@ interface Place {
 	name: string
 	room?: string
 	address?: string
+	url?: string
 	type: 'PHYSICAL' | 'ONLINE'
 }
 
@@ -50,11 +51,11 @@ interface Submitter {
 
 const schema = z.object({
 	key: z.string().optional(),
-	title: z.string({ required_error: 'Bitte Titel der Veranstaltung angeben' }),
-	description: z.string({ required_error: 'Bitte Beschreibung der Veranstaltung angeben' }),
+	title: z.string().min(1, 'Bitte Titel der Veranstaltung angeben'),
+	description: z.string().min(1, 'Bitte Beschreibung der Veranstaltung angeben'),
 	website: z.string().url('Die angegebene Website ist keine gültige URL').optional(),
 	time: z.object({
-		start: z.string({ required_error: 'Bitte Beginn der Veranstaltung angeben' }),
+		start: z.string().min(1, 'Bitte Beginn der Veranstaltung angeben'),
 		end: z.string().optional(),
 		repeats: z
 			.object({
@@ -67,14 +68,15 @@ const schema = z.object({
 			.optional(),
 	}),
 	place: z.object({
-		name: z.string({ required_error: 'Bitte Ort angeben' }),
+		name: z.string().min(1, 'Bitte Ort angeben'),
 		room: z.string().optional(),
 		address: z.string().optional(),
+		url: z.string().url('Die Teilnahme-URL ist ungültig').optional(),
 		type: z.enum(['PHYSICAL', 'ONLINE'], { invalid_type_error: 'Ungültiger Typ des Orts' }),
 	}),
 	organizer: z
 		.object({
-			name: z.string(),
+			name: z.string().min(1, 'Bitte Name der Organisator*innen angeben'),
 			phone: z
 				.string()
 				.regex(/^\s*\+?[0-9 /()-]\s*$/, 'Ungültige Telefonnummer angegeben')
@@ -87,11 +89,12 @@ const schema = z.object({
 		})
 		.optional(),
 	pictureUrl: z.string().url('Ungültige URL beim Bild angegeben').optional(),
-	tags: z.string({ required_error: 'Array an Tags fehlt' }).array(),
+	tags: z.string().min(1, 'Tag darf nicht leer sein').array(),
 	submitter: z.object({
-		name: z.string({ required_error: 'Dein Name fehlt' }),
+		name: z.string().min(1, 'Dein Name fehlt'),
 		email: z
-			.string({ required_error: 'Deine E-Mail-Adresse fehlt' })
+			.string()
+			.min(1, 'Deine E-Mail-Adresse fehlt')
 			.email('Ungültige E-Mail-Adresse angegeben'),
 	}),
 })
