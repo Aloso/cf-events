@@ -30,7 +30,7 @@ interface Repeats {
 }
 
 interface Place {
-	name: string
+	name?: string
 	room?: string
 	address?: string
 	url?: string
@@ -79,7 +79,7 @@ const schema = z.object({
 			name: z.string().min(1, 'Bitte Name der Organisator*innen angeben'),
 			phone: z
 				.string()
-				.regex(/^\s*\+?[0-9 /()-]\s*$/, 'Ungültige Telefonnummer angegeben')
+				.regex(/^\s*\+?[0-9 /()-]+\s*$/, 'Ungültige Telefonnummer angegeben')
 				.optional(),
 			email: z
 				.string()
