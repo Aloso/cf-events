@@ -68,7 +68,7 @@ const schema = z.object({
 			.optional(),
 	}),
 	place: z.object({
-		name: z.string().min(1, 'Bitte Ort angeben'),
+		name: z.string().optional(),
 		room: z.string().optional(),
 		address: z.string().optional(),
 		url: z.string().url('Die Teilnahme-URL ist ungültig').optional(),

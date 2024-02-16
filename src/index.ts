@@ -1,3 +1,4 @@
+import { jsonResponse } from './lib/http'
 import { routes } from './routes'
 
 type EnvVars = {
@@ -31,13 +32,17 @@ async function fetchWrapper(request: Request, env: Env, ctx: ExecutionContext) {
 	}
 
 	try {
-		return getRouteFunction(request)(request, env, ctx)
+		const response = await getRouteFunction(request)(request, env, ctx)
+		return response
 	} catch (error) {
 		if (error instanceof Response) {
 			return error
+		} else if (error instanceof Error) {
+			console.error(error.message, error.stack)
+		} else {
+			console.error(JSON.stringify(error))
 		}
-		const message = error instanceof Error ? error.message : 'Internal Server Error'
-		return new Response(message, { status: 500 })
+		return jsonResponse('Internal Server Error', { status: 500 })
 	}
 }
 
