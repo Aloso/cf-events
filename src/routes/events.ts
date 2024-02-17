@@ -1,6 +1,6 @@
 import type { Env } from '..'
+import { getAllEvents } from '../lib/db'
 import { jsonResponse } from '../lib/http'
-import { getPublishedEvents } from '../lib/kv'
 
 /*
 	Everyone can fetch the list of published events. Only authorized users (admins) can
@@ -9,6 +9,6 @@ import { getPublishedEvents } from '../lib/kv'
 
 // fetch all
 export async function GET(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-	const events = await getPublishedEvents(env)
+	const { events } = await getAllEvents(env, {}, true)
 	return jsonResponse(events)
 }

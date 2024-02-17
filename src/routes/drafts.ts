@@ -1,6 +1,6 @@
 import type { Env } from '..'
+import { getAllEvents } from '../lib/db'
 import { authenticate, jsonResponse, queryNumber } from '../lib/http'
-import { getAllDrafts } from '../lib/kv'
 
 /*
 	The permissions for drafts are opposite to published event permissions:
@@ -21,6 +21,6 @@ export async function GET(request: Request, env: Env, ctx: ExecutionContext): Pr
 	const start = queryNumber(params, 'start')
 	const limit = queryNumber(params, 'limit')
 
-	const { length, events } = await getAllDrafts(env, { start, limit })
+	const { length, events } = await getAllEvents(env, { start, limit }, false)
 	return jsonResponse({ length, events })
 }

@@ -6,7 +6,7 @@ type EnvVars = {
 }
 
 export interface Env extends EnvVars {
-	EVENTS_KV: KVNamespace
+	DB: D1Database
 	ALLOW_ORIGIN: string
 }
 
