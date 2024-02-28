@@ -5,6 +5,7 @@ export interface Event {
 	key?: string
 	title: string
 	description: string
+	descHtml?: string
 	website?: string
 	time: Time
 	place: Place
@@ -53,6 +54,7 @@ const schema = z.object({
 	key: z.string().optional(),
 	title: z.string().min(1, 'Bitte Titel der Veranstaltung angeben'),
 	description: z.string().min(1, 'Bitte Beschreibung der Veranstaltung angeben'),
+	descHtml: z.string().optional(),
 	website: z.string().url('Die angegebene Website ist keine gültige URL').optional(),
 	time: z.object({
 		start: z.string().min(1, 'Bitte Beginn der Veranstaltung angeben'),

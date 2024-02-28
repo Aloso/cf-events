@@ -3,6 +3,7 @@ import type { Env } from '..'
 import { jsonResponse, queryKey } from '../lib/http'
 import { parseEvent } from '../lib/event'
 import { addEvent, deleteEvent, getEvent, putEvent } from '../lib/db'
+import { mdToHtml } from '../lib/markdown'
 
 /*
 	The permissions for drafts are opposite to published event permissions:
@@ -31,6 +32,7 @@ export async function POST(request: Request, env: Env, ctx: ExecutionContext): P
 	const event = parseEvent(await request.json())
 	const key = uuidv4()
 	event.key = key
+	event.descHtml = mdToHtml(event.description)
 
 	await addEvent(env, key, event, false)
 	return jsonResponse({ key })
@@ -45,6 +47,8 @@ export async function PUT(request: Request, env: Env, ctx: ExecutionContext): Pr
 
 	const event = parseEvent(await request.json())
 	event.key = key
+	event.descHtml = mdToHtml(event.description)
+
 	await putEvent(env, key, event, false)
 	return new Response('OK')
 }

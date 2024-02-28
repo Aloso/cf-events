@@ -2,6 +2,7 @@ import type { Env } from '..'
 import { putEvent, setEventPublished } from '../lib/db'
 import { parseEvent } from '../lib/event'
 import { authenticate, queryKey } from '../lib/http'
+import { mdToHtml } from '../lib/markdown'
 
 /*
 	Everyone can fetch the list of published events. Only authorized users (admins) can
@@ -30,6 +31,8 @@ export async function PUT(request: Request, env: Env, ctx: ExecutionContext): Pr
 		throw new Response('Missing key', { status: 401 })
 	}
 	receivedEvent.key = key
+	receivedEvent.descHtml = mdToHtml(receivedEvent.description)
+
 	await putEvent(env, key, receivedEvent, true)
 	return new Response('OK')
 }
