@@ -35,7 +35,7 @@ export async function POST(request: Request, env: Env, ctx: ExecutionContext): P
 	event.descHtml = mdToHtml(event.description)
 
 	await addEvent(env, key, event, false)
-	return jsonResponse({ key })
+	return jsonResponse(event)
 }
 
 // edit
@@ -50,7 +50,7 @@ export async function PUT(request: Request, env: Env, ctx: ExecutionContext): Pr
 	event.descHtml = mdToHtml(event.description)
 
 	await putEvent(env, key, event, false)
-	return new Response('OK')
+	return jsonResponse(event)
 }
 
 // delete

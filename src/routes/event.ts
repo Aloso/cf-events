@@ -1,7 +1,7 @@
 import type { Env } from '..'
 import { putEvent, setEventPublished } from '../lib/db'
 import { parseEvent } from '../lib/event'
-import { authenticate, queryKey } from '../lib/http'
+import { authenticate, jsonResponse, queryKey } from '../lib/http'
 import { mdToHtml } from '../lib/markdown'
 
 /*
@@ -25,16 +25,16 @@ export async function POST(request: Request, env: Env, ctx: ExecutionContext): P
 export async function PUT(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 	authenticate(request, env)
 
-	const receivedEvent = parseEvent(await request.json())
-	const key = queryKey(request) ?? receivedEvent.key
+	const event = parseEvent(await request.json())
+	const key = queryKey(request) ?? event.key
 	if (!key) {
 		throw new Response('Missing key', { status: 401 })
 	}
-	receivedEvent.key = key
-	receivedEvent.descHtml = mdToHtml(receivedEvent.description)
+	event.key = key
+	event.descHtml = mdToHtml(event.description)
 
-	await putEvent(env, key, receivedEvent, true)
-	return new Response('OK')
+	await putEvent(env, key, event, true)
+	return jsonResponse(event)
 }
 
 // unpublish
