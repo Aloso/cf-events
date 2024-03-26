@@ -9,7 +9,7 @@ export interface Event {
 	website?: string
 	time: Time
 	place: Place
-	organizer?: Organizer
+	organizer?: Organizer // TODO: make non-optional
 	pictureUrl?: string
 	tags: string[]
 	submitter: Submitter
@@ -39,7 +39,7 @@ interface Place {
 }
 
 interface Organizer {
-	name: string
+	name?: string
 	phone?: string
 	email?: string
 	website?: string
@@ -78,7 +78,7 @@ const schema = z.object({
 	}),
 	organizer: z
 		.object({
-			name: z.string().min(1, 'Bitte Name der Organisator*innen angeben'),
+			name: z.string().min(1, 'Bitte Name der Organisator*innen angeben').optional(),
 			phone: z
 				.string()
 				.regex(/^\s*\+?[0-9 /()-]+\s*$/, 'Ungültige Telefonnummer angegeben')

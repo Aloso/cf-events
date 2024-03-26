@@ -6,18 +6,22 @@ export function jsonResponse(data: unknown, init: ResponseInit = {}): Response {
 }
 
 export function authenticate(request: Request, env: Env) {
+	const authenticated = tryAuthentication(request, env)
+	if (!authenticated) {
+		throw new Response('Unauthorized', { status: 401 })
+	}
+}
+
+export function tryAuthentication(request: Request, env: Env): boolean {
 	const auth = request.headers.get('Authorization')
 	const match = auth?.match(/^(?<user>[^@]*?)@(?<password>.*)$/)
 	if (!match) {
-		throw new Response('Unauthorized', { status: 401 })
+		return false
 	}
 
 	const { user, password } = match.groups!
 	const variable = `USER__${user}` as const
-	if (variable in env && env[variable] === password) {
-		return
-	}
-	throw new Response('Unauthorized', { status: 401 })
+	return variable in env && env[variable] === password
 }
 
 export function queryKey(receiver: Request | URLSearchParams) {
