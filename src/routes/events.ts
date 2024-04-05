@@ -16,6 +16,7 @@ export async function GET(request: Request, env: Env, ctx: ExecutionContext): Pr
 	if (!authenticated) {
 		events.forEach((event) => {
 			delete event.submitter
+			delete event.orgaNotes
 		})
 	}
 	return jsonResponse(events)

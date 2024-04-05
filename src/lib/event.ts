@@ -13,6 +13,7 @@ export interface Event {
 	pictureUrl?: string
 	tags: string[]
 	submitter: Submitter
+	orgaNotes?: string
 }
 
 interface Time {
@@ -92,6 +93,7 @@ const schema = z.object({
 	pictureUrl: z.string().url('Ungültige URL beim Bild angegeben').optional(),
 	tags: z.string().min(1, 'Tag darf nicht leer sein').array(),
 	submitter: submitterSchema,
+	orgaNotes: z.string().optional(),
 })
 
 export function parseEvent(data: unknown): Event {
