@@ -4,8 +4,7 @@ import { jsonResponse } from './http'
 export interface Event {
 	key?: string
 	title: string
-	description: string
-	descHtml?: string
+	descHtml: string
 	website?: string
 	time: Time | Time[]
 	place: Place
@@ -84,8 +83,7 @@ const submitterSchema = z.object({
 const schema = z.object({
 	key: z.string().optional(),
 	title: z.string().min(1, 'Bitte Titel der Veranstaltung angeben'),
-	description: z.string().min(1, 'Bitte Beschreibung der Veranstaltung angeben'),
-	descHtml: z.string().optional(),
+	descHtml: z.string().min(1, 'Bitte Beschreibung der Veranstaltung angeben'),
 	website: z.string().url('Die angegebene Website ist keine gültige URL').optional(),
 	time: z.array(timeSchema).or(timeSchema),
 	place: placeSchema,
@@ -97,6 +95,9 @@ const schema = z.object({
 })
 
 export function parseEvent(data: unknown): Event {
+	if (typeof data === 'object' && data && 'description' in data) {
+		delete data.description
+	}
 	try {
 		return schema.parse(data)
 	} catch (error) {

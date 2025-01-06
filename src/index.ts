@@ -12,6 +12,7 @@ export interface Env extends EnvVars {
 
 function addCorsHeaders(env: Env, headers: Headers) {
 	headers.set('Allow', 'OPTIONS, GET, HEAD, PUT, POST, DELETE')
+	console.log('env.ALLOW_ORIGIN', env.ALLOW_ORIGIN)
 	headers.set('Access-Control-Allow-Origin', env.ALLOW_ORIGIN)
 	headers.set('Access-Control-Allow-Headers', 'Authorization')
 	headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET, HEAD, PUT, POST, DELETE')
