@@ -10,10 +10,16 @@ export interface Env extends EnvVars {
 	ALLOW_ORIGIN: string
 }
 
-function addCorsHeaders(env: Env, headers: Headers) {
+function addCorsHeaders(origin: string | null, env: Env, headers: Headers) {
+	if (env.ALLOW_ORIGIN.startsWith('https://*.') && origin) {
+		const { hostname } = new URL(origin)
+		const first = hostname.split('.')[0]
+		headers.set('Access-Control-Allow-Origin', env.ALLOW_ORIGIN.replaceAll('*', first))
+	} else {
+		headers.set('Access-Control-Allow-Origin', env.ALLOW_ORIGIN)
+	}
+
 	headers.set('Allow', 'OPTIONS, GET, HEAD, PUT, POST, DELETE')
-	console.log('env.ALLOW_ORIGIN', env.ALLOW_ORIGIN)
-	headers.set('Access-Control-Allow-Origin', env.ALLOW_ORIGIN)
 	headers.set('Access-Control-Allow-Headers', 'Authorization')
 	headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET, HEAD, PUT, POST, DELETE')
 	headers.set('Access-Control-Max-Age', '86400')
@@ -22,7 +28,7 @@ function addCorsHeaders(env: Env, headers: Headers) {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const response = await fetchWrapper(request, env, ctx)
-		addCorsHeaders(env, response.headers)
+		addCorsHeaders(request.headers.get('Origin'), env, response.headers)
 		return response
 	},
 }

@@ -13,6 +13,7 @@ export interface Event {
 	tags: string[]
 	submitter: Submitter
 	orgaNotes?: string
+	colors?: string[]
 }
 
 interface Time {
@@ -92,6 +93,7 @@ const schema = z.object({
 	tags: z.string().min(1, 'Tag darf nicht leer sein').array(),
 	submitter: submitterSchema,
 	orgaNotes: z.string().optional(),
+	colors: z.array(z.string()).length(2).optional(),
 })
 
 export function parseEvent(data: unknown): Event {
